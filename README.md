@@ -1,21 +1,16 @@
 # CV-course2fine
 
+These files are my first test to achieve the pyramid template matching with python openCV.
 
-I added
-	new file:   IMG30.JPG
-	new file:   cam.py
-        new file:   fly.jpg
-        new file:   mario.jpg
-        new file:   pyramids.py
-        new file:   pyramids_2.py
-        new file:   res.png
-        new file:   temp.py
-        new file:   temp2.py
-        new file:   template.jpg
-for that I'm afraid that my computer get some risk, and I need to reinstall the OS.
+referrence web:
+https://zone.ni.com/reference/en-XX/help/370281AC-01/nivisionconcepts/pattern_matching_techniques/
 
-These files are my first test to achieve the courese-to-fine template matching with python openCV.
+This algorithm is achieved in the labview vision, but it takes a long time to compute the result. 
 
-Up to now, I could match the template and make pyramids for images.
+The temp3.py shows the compute time for full template matching, which cost 0.5s but this will cost more than 4s. 
+
+
+
+<!-- Up to now, I could match the template and make pyramids for images.
 But there are several points that they are too closed to each other.
-I need to define a compare function to select the best ones.
+I need to define a compare function to select the best ones. -->
