@@ -55,7 +55,7 @@ def FirstMatching(img_pyr,templ,matchPrecise=50):
 
 
 if __name__ == '__main__':
-    pyrLevelMax = 1
+    pyrLevelMax = 3
     # os.chdir('./CV course2fine')
     np.set_printoptions(threshold=100)
     #def Py_PatternMatching():
@@ -68,46 +68,37 @@ if __name__ == '__main__':
     #    sh = np.array(im.shape[:2])
     #    templ_range = templ_range.T / sh.T * np.ones((2,1))
     
+    
+    
+    # generate the pyramid images and templates
     templ = [im_gray[285:634, 1743:2085].copy()]
     img_pyr = [im_gray.copy()]
-    
-    plt.figure(1)
-    plt.subplot(2,3,1)
-    plt.imshow(img_pyr[0])
-    
-    plt.figure(2)
-    plt.subplot(2,3,1)
-    plt.imshow(templ[0])
-    
-    for i in range(1,pyrLevelMax):
-        
-        img_pyr.append( cv2.pyrDown(img_pyr[i-1]))
-    #    plt.figure(1)
-    #    plt.subplot(2,3,i+1)
-    #    plt.imshow(img_pyr[i])
-        
-        
-        templ.append(cv2.pyrDown(templ[i-1]))
-    #    plt.figure(2)
-    #    plt.subplot(2,3,i+1)
-    #    plt.imshow(templ[i])
     for i in range(1,pyrLevelMax):        
+        img_pyr.insert(0, cv2.pyrDown(img_pyr[0]))
+        templ.insert(0, cv2.pyrDown(templ[0]))
+        
+    # show the pyramid images 
+    for i in range(0,pyrLevelMax):        
         plt.figure(1)
         plt.subplot(2,3,i+1)
-        plt.imshow(img_pyr[i])        
-
+        plt.imshow(img_pyr[i])      
         plt.figure(2)
         plt.subplot(2,3,i+1)
         plt.imshow(templ[i])
-    
+    # plt.show()
+
+    # coarse matching 
     w, h = templ[0].shape[::-1]
+    print('templ[0].shape=',templ[0].shape)
+    print('templ[0].shape[::-1]=',templ[0].shape[::-1])
+    
     res,loc = FirstMatching(img_pyr[0],templ[0],50)
     
-    cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    cv2.imshow('image',res)
-    plt.imshow(res),plt.show()
+    cv2.namedWindow('res',cv2.WINDOW_NORMAL)
+    cv2.imshow('res',res)
+    # plt.imshow(res),plt.show()
 
-    k = 1
+    # k = 1
     for pt in loc:
         cv2.rectangle(img_pyr[0], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
         # tst = img_pyr[4][pt[1]*2:(pt[1]+w+1)*2,pt[0]*2:(pt[0]+h+1)*2]
@@ -115,24 +106,25 @@ if __name__ == '__main__':
     cv2.namedWindow('image2',cv2.WINDOW_NORMAL)
     cv2.imshow('image2',img_pyr[0])
     
-    # k = 1
-    # for pt in loc[:,::-1]:
-    #     cv2.rectangle(img_pyr[5], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
-    #     tst = img_pyr[4][pt[1]*2:(pt[1]+w+1)*2,pt[0]*2:(pt[0]+h+1)*2]
-        
+    # second matching , improve the resolution    
+    k = 0
+    for pt in loc:
+        # cv2.rectangle(img_pyr[5], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
+        tst = img_pyr[1][pt[1]*2:(pt[1]+w+1)*2, pt[0]*2:(pt[0]+h+1)*2].copy()
+        # cv2.namedWindow('img_pyr[1]',cv2.WINDOW_NORMAL)
+        # cv2.imshow('img_pyr[1]',tst)
+        # cv2.waitKey(0)
+        k=k+1
+        plt.figure(3)
+        plt.subplot(2,3,k)
+        plt.imshow(tst)
+    plt.show()
+    
+    #     for i in range(1,pyrLevelMax):  
+
+    #         pass
         
     #     pos = MaxScoreMatch(tst,templ[4])
-        
-    
-    # for i in range(1,pyrLevelMax):
-        
-    #     plt.figure(1)
-    #     plt.subplot(2,3,i+1)
-    #     plt.imshow(img_pyr[i])        
-
-    #     plt.figure(2)
-    #     plt.subplot(2,3,i+1)
-    #     plt.imshow(templ[i])
     
     
     # cv2.destroyAllWindows()
