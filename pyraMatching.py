@@ -36,11 +36,22 @@ def MaxScoreMatch(img,tmpl):
     pass
 
 
-def FirstMatching():
-    pass
+# matching the full image with the lowest resolution
+def FirstMatching(img_pyr,templ,matchPrecise=50):
+    res = cv2.matchTemplate(img_pyr,templ,cv2.TM_CCOEFF_NORMED)
+    # cv2.waitKey(0)
 
-
-
+    loc = np.where( res >= 0.8)
+    bb = RemoveDuplicates(loc, res[loc],matchPrecise)
+    print('bb=',bb)
+# #    loc = 
+    loc = np.array(loc).T
+    loc = loc[bb]
+    loc_T = list(zip(*loc[::-1]))
+# #    res[loc[0],loc[1]]
+    loc = loc[:,::-1]
+    print('loc=',loc)
+    return res,loc
 
 
 if __name__ == '__main__':
@@ -80,8 +91,7 @@ if __name__ == '__main__':
     #    plt.figure(2)
     #    plt.subplot(2,3,i+1)
     #    plt.imshow(templ[i])
-    for i in range(1,pyrLevelMax):
-        
+    for i in range(1,pyrLevelMax):        
         plt.figure(1)
         plt.subplot(2,3,i+1)
         plt.imshow(img_pyr[i])        
@@ -89,25 +99,14 @@ if __name__ == '__main__':
         plt.figure(2)
         plt.subplot(2,3,i+1)
         plt.imshow(templ[i])
-        
-    res = cv2.matchTemplate(img_pyr[0],templ[0],cv2.TM_CCOEFF_NORMED)
+    
+    w, h = templ[0].shape[::-1]
+    res,loc = FirstMatching(img_pyr[0],templ[0],50)
     
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     cv2.imshow('image',res)
     plt.imshow(res),plt.show()
-    # cv2.waitKey(0)
 
-    w, h = templ[0].shape[::-1]
-    loc = np.where( res >= 0.8)
-    bb = RemoveDuplicates(loc, res[loc].copy(),50)
-    print('bb=',bb)
-# #    loc = 
-    loc = np.array(loc).T
-    loc = loc[bb]
-    loc_T = list(zip(*loc[::-1]))
-# #    res[loc[0],loc[1]]
-    loc = loc[:,::-1]
-    print('loc=',loc)
     k = 1
     for pt in loc:
         cv2.rectangle(img_pyr[0], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
