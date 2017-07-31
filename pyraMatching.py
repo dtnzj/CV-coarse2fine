@@ -29,9 +29,23 @@ def RemoveDuplicates(loc, sc,th):
 
 def MaxScoreMatch(img,tmpl):
     
+    plt.figure(11)
+    plt.subplot(1,2,1)
+    plt.imshow(img)  
+    plt.subplot(1,2,2)
+    plt.imshow(tmpl)  
+    plt.show()
+        
+    print('tmpl: ',len(templ),len(tmpl[0]))
+    print('img : ',len(img),len(img[0]))
+    print('img = ',img)
+    print('tmpl= ',tmpl)
     res = cv2.matchTemplate( img, tmpl, cv2.TM_CCOEFF_NORMED )
-    print (res)
-    return np.where( res >= res.max() )
+    # print (res)
+    pos = np.where( res >= res.max() )
+    pos = np.array(pos).T
+
+    return pos
     
     pass
 
@@ -43,14 +57,14 @@ def FirstMatching(img_pyr,templ,matchPrecise=50):
 
     loc = np.where( res >= 0.8)
     bb = RemoveDuplicates(loc, res[loc],matchPrecise)
-    print('bb=',bb)
+    # print('bb=',bb)
 # #    loc = 
     loc = np.array(loc).T
     loc = loc[bb]
     loc_T = list(zip(*loc[::-1]))
 # #    res[loc[0],loc[1]]
     loc = loc[:,::-1]
-    print('loc=',loc)
+    # print('loc=',loc)
     return res,loc
 
 
@@ -81,16 +95,20 @@ if __name__ == '__main__':
     for i in range(0,pyrLevelMax):        
         plt.figure(1)
         plt.subplot(2,3,i+1)
-        plt.imshow(img_pyr[i])      
+        plt.imshow(img_pyr[i])  
+        tmp= ['img_pyr[',str(i),']']   
+        plt.title(tmp) 
         plt.figure(2)
         plt.subplot(2,3,i+1)
         plt.imshow(templ[i])
+        tmp= ['templ[',i,']']
+        plt.title(tmp) 
     # plt.show()
 
     # coarse matching 
-    w, h = templ[0].shape[::-1]
-    print('templ[0].shape=',templ[0].shape)
-    print('templ[0].shape[::-1]=',templ[0].shape[::-1])
+    h, w = templ[0].shape
+    # print('templ[0].shape=',templ[0].shape)
+    # print('templ[0].shape[::-1]=',templ[0].shape[::-1])
     
     res,loc = FirstMatching(img_pyr[0],templ[0],50)
     
@@ -99,8 +117,8 @@ if __name__ == '__main__':
     # plt.imshow(res),plt.show()
 
     # k = 1
-    for pt in loc:
-        cv2.rectangle(img_pyr[0], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
+    # for pt in loc:
+    #     cv2.rectangle(img_pyr[0], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
         # tst = img_pyr[4][pt[1]*2:(pt[1]+w+1)*2,pt[0]*2:(pt[0]+h+1)*2]
     
     cv2.namedWindow('image2',cv2.WINDOW_NORMAL)
@@ -110,21 +128,44 @@ if __name__ == '__main__':
     k = 0
     for pt in loc:
         # cv2.rectangle(img_pyr[5], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
-        tst = img_pyr[1][pt[1]*2:(pt[1]+w+1)*2, pt[0]*2:(pt[0]+h+1)*2].copy()
         # cv2.namedWindow('img_pyr[1]',cv2.WINDOW_NORMAL)
         # cv2.imshow('img_pyr[1]',tst)
         # cv2.waitKey(0)
-        k=k+1
-        plt.figure(3)
-        plt.subplot(2,3,k)
-        plt.imshow(tst)
+        
+        pos = pt
+        for i in range(1,pyrLevelMax):  
+            # print('i=',i)
+            # print(pos[1]*2,(pos[1]+w+5)*2, pos[0]*2, (pos[0]+h+5)*2)
+            pos = pos *2
+            h, w = templ[i].shape
+            tst = img_pyr[i][pos[1]:(pos[1]+w+10), pos[0]:(pos[0]+h+10)]
+            cv2.namedWindow('tst',cv2.WINDOW_NORMAL)
+            cv2.imshow('tst',tst)
+            # print(len(tst),len(templ[i]),i)
+            
+            cv2.waitKey(0)
+            abc = MaxScoreMatch(tst,templ[i])
+            print('abc=',abc)
+            print('pos=',pos)
+            pos = pos +abc[::-1]
+            print('pos(after)=',pos)
+            
+            # pos = np.int16(pos)
+            pos=pos[0]
+
+            # print('pos=',type(pos[0]))
+            
+            pass
+        
+        # k=k+1
+        # plt.figure(3)
+        # plt.subplot(2,3,k)
+        # plt.imshow(tst)
     plt.show()
     
-    #     for i in range(1,pyrLevelMax):  
 
-    #         pass
         
-    #     pos = MaxScoreMatch(tst,templ[4])
+    #     
     
     
     # cv2.destroyAllWindows()
