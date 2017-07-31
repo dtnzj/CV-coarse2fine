@@ -10,7 +10,7 @@ import os
 # input:    loc:    points' positions
 #           sc :    scores
 # output      
-def RemoveDuplicates(loc, sc,th):
+def RemoveDuplicates(loc, sc,th=50):
     loc = np.array(loc).T
     N = len(loc)
     aa = [0]
@@ -51,12 +51,12 @@ def MaxScoreMatch(img,tmpl):
 
 
 # matching the full image with the lowest resolution
-def FirstMatching(img_pyr,templ,matchPrecise=50):
+def FirstMatching(img_pyr,templ):
     res = cv2.matchTemplate(img_pyr,templ,cv2.TM_CCOEFF_NORMED)
     # cv2.waitKey(0)
 
     loc = np.where( res >= 0.8)
-    bb = RemoveDuplicates(loc, res[loc],matchPrecise)
+    bb = RemoveDuplicates(loc, res[loc],50)
     # print('bb=',bb)
 # #    loc = 
     loc = np.array(loc).T
@@ -72,12 +72,12 @@ if __name__ == '__main__':
     pyrLevelMax = 3
     # os.chdir('./CV course2fine')
     np.set_printoptions(threshold=100)
-    #def Py_PatternMatching():
+    # def Py_PatternMatching():
         
     im = cv2.imread ('IMG30.JPG',1) 
     im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     #    plt.imshow(im),plt.show()
-    #im = im[:,:,(1,2,0)]
+    #    im = im[:,:,(1,2,0)]
     #    templ_range = np.array([[285,634],[1743,2085]])
     #    sh = np.array(im.shape[:2])
     #    templ_range = templ_range.T / sh.T * np.ones((2,1))
@@ -94,12 +94,12 @@ if __name__ == '__main__':
     # show the pyramid images 
     for i in range(0,pyrLevelMax):        
         plt.figure(1)
-        plt.subplot(2,3,i+1)
+        plt.subplot(2,2,i+1)
         plt.imshow(img_pyr[i])  
         tmp= ['img_pyr[',str(i),']']   
         plt.title(tmp) 
         plt.figure(2)
-        plt.subplot(2,3,i+1)
+        plt.subplot(2,2,i+1)
         plt.imshow(templ[i])
         tmp= ['templ[',i,']']
         plt.title(tmp) 
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # print('templ[0].shape=',templ[0].shape)
     # print('templ[0].shape[::-1]=',templ[0].shape[::-1])
     
-    res,loc = FirstMatching(img_pyr[0],templ[0],50)
+    res,loc = FirstMatching(img_pyr[0],templ[0])
     
     cv2.namedWindow('res',cv2.WINDOW_NORMAL)
     cv2.imshow('res',res)
@@ -121,10 +121,11 @@ if __name__ == '__main__':
     #     cv2.rectangle(img_pyr[0], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
         # tst = img_pyr[4][pt[1]*2:(pt[1]+w+1)*2,pt[0]*2:(pt[0]+h+1)*2]
     
-    cv2.namedWindow('image2',cv2.WINDOW_NORMAL)
-    cv2.imshow('image2',img_pyr[0])
+    # cv2.namedWindow('image2',cv2.WINDOW_NORMAL)
+    # cv2.imshow('image2',img_pyr[0])
     
-    # second matching , improve the resolution    
+    # fine matching , improve the resolution    
+    posOut = list()
     k = 0
     for pt in loc:
         # cv2.rectangle(img_pyr[5], tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
@@ -156,11 +157,23 @@ if __name__ == '__main__':
             # print('pos=',type(pos[0]))
             
             pass
+        posOut.append(pos)
         
         # k=k+1
         # plt.figure(3)
-        # plt.subplot(2,3,k)
+        # plt.subplot(2,2,k)
         # plt.imshow(tst)
+    k = 1
+    h, w = templ[-1].shape
+    
+    for pt in posOut:
+        cv2.rectangle(im, tuple(pt), tuple((pt + [w, h])), (0,0,255), 1)
+        # tst = img_pyr[4][pt[1]*2:(pt[1]+w+1)*2,pt[0]*2:(pt[0]+h+1)*2]
+    
+    cv2.namedWindow('OutPutImage',cv2.WINDOW_NORMAL)
+    cv2.imshow('OutPutImage',im)
+            
+
     plt.show()
     
 
