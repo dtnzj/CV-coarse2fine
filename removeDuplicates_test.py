@@ -10,10 +10,10 @@ import numpy as np
 #           RD_sc :    scores
 # output      
 def RemoveDuplicates_new(RD_loc, RD_th=100):
-    RD_loc = np.array(RD_loc)
-    N = len(RD_loc)
+    # RD_loc = np.array(RD_loc)
+    # N = len(RD_loc)
     # RD_aa is the point group list, the first element of every group is the average location
-    RD_aa = [[RD_loc[0]]]
+    RD_aa = [[RD_loc[0], RD_loc[0]]]
     # print(RD_aa)
     for i in RD_loc[1::]:
         flag = 0
@@ -27,35 +27,44 @@ def RemoveDuplicates_new(RD_loc, RD_th=100):
 
         # print(flag)
         if flag == 0 :
-            # add a new point group
-            RD_aa.append([i])
-            # insert the average location at the first element
-            RD_aa.insert(0,[i])
-    print(RD_aa)
-    print('\n\n\nshape=',np.shape(RD_aa),'\n\n\n')
-    
+            # add a new point group and insert the average location at the first element
+            RD_aa.append([i,i])
+
+    RD_bb = []
     for i in RD_aa:
-        print('befor=',i)
-        i = [np.max(i, axis=1), np.min(i, axis=1)]
-        print('after=',i)
+        # print('befor=',i)
+        i = np.append(np.max(i, axis=0),np.min(i, axis=0))
+        i = np.int16(i)
+        # print('after=',i)
+        RD_bb = RD_bb + [i.tolist()]
         
-        pass
-    return RD_aa
+    print(RD_bb)
+    return RD_bb
 
 
 def RemoveDuplicates_test(img, loc, bb):
     
-    img[loc] = 0
-    cv2.rectangle(img, tuple(loc[0:1]-1), tuple(loc[2:3]+1), (0, 0, 255), 1)
+    print("img = ")
+    # for cc in loc:
+    #     print(img[cc[0]][cc[1]][1])
+    #     img[cc[0]][cc[1]][1] = 0
+    for cc in loc:
+        # print("cc = ",cc[0:2])
+        cv2.circle(img, tuple(cc[0:2]), 10, (0, 0, 255), 1)
+    
+    for cc in bb:
+        print("cc = ",cc[0:2],cc[2:4])
+        cv2.rectangle(img, tuple(cc[0:2]), tuple(cc[2:4]), (0, 0, 255), 1)
     
     cv2.namedWindow('RemoveDuplicates_img_In', cv2.WINDOW_NORMAL)
     cv2.imshow('RemoveDuplicates_img_In', img)
+    cv2.waitKey(0)
 
 
 if __name__ == '__main__':
     img = np.zeros([1000,1000,3])
     img[:,:,1] = np.random.randint(0, 255,size=(1000, 1000))
-    loc = np.random.randint(0, 1000,size=(50, 2))
+    loc = np.random.randint(0, 1000,size=(100, 2))
     
     
     # cv2.namedWindow('RemoveDuplicates_img_In', cv2.WINDOW_NORMAL)
