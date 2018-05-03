@@ -1,4 +1,4 @@
-# CV-course2fine
+# CV-coarse2fine
 
 These files are my first test to achieve the pyramid template matching with python openCV.
 
