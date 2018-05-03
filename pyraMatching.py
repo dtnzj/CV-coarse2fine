@@ -159,7 +159,7 @@ if __name__ == '__main__':
     posOut = PyramidTemplatMatching(im_gray, templ, pyrLevelMax=3, ratio=0.3)
     t_end = clock()
     dt = t_end - t_start
-    print('fawefw',dt, 1/dt)
+    print('Compute Time:',dt, 1/dt)
 
     for pt in posOut:
         cv2.rectangle(im, tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
