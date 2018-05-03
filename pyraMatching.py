@@ -71,9 +71,9 @@ def FirstMatching(img_pyr, templ, thr = 0.8):
 
 # the pyramid matching function
 def PyramidTemplatMatching(img, tmpl, pyrLevelMax=3, ratio=0.5, thr = 0.8):
-    
-    l = len(img.shape)
-    if  l>3 or l<2:
+
+    l = len(img. shape)
+    if l>3 or l<2:
         return
     elif l==3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -150,11 +150,26 @@ def PyramidTemplatMatching(img, tmpl, pyrLevelMax=3, ratio=0.5, thr = 0.8):
 if __name__ == '__main__':
     # np.set_printoptions(threshold=100)
         
-    im = cv2.imread ('IMG30.JPG', 1) 
+    im = cv2.imread ('IMG00166.JPG', 1) 
     im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    templ = cv2.imread('template.jpg',0)
+    # templ = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
     
-    templ = im_gray[285:634, 1743:2085]
+    # templ = im_gray[1009:1510, 460:1052]
+    # cv2.namedWindow('TemplateImage',cv2.WINDOW_NORMAL)
+    # cv2.imshow('TemplateImage',templ)
+    # plt.figure(1)
+    # plt.imshow(im_gray)
     
+    # plt.figure(2)
+    # plt.imshow(templ)
+    # plt.show()
+
+    # cv2.imwrite('template.jpg',templ)
+    # cv2.waitKey(0)
+    
+    # exit()
+
     t_start = clock()
     posOut = PyramidTemplatMatching(im_gray, templ, pyrLevelMax=3, ratio=0.3)
     t_end = clock()
@@ -168,4 +183,4 @@ if __name__ == '__main__':
     cv2.imshow('OutPutImage', im)
     
     cv2.waitKey(0)
-
+    cv2.destroyAllWindows()
