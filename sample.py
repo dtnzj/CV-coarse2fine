@@ -1,4 +1,10 @@
-from 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+from time import clock
+#  from 
+
 if __name__ == '__main__':
     # np.set_printoptions(threshold=100)
         
