@@ -7,17 +7,22 @@ Created on Tue Apr 11 14:22:19 2017
 """
 
 from socketserver import BaseRequestHandler, TCPServer
+# import the cam read and objectdetection class
+
 class EchoHandler(BaseRequestHandler):
+    
     # set the objectDetection algorithm class 
-    self.od = 
+    od = 123; 
+
 
     def handle(self):
             msg = self.request.recv(64)
             print (msg)
             
-            if msg[0:6] == b"sutter":
-                print ('calling CurrentPos() command')
-                print (tmp)
+            if msg == b"LocationRequest":
+                print ('calling LocationRequest() command')
+                print (msg)
+
                 self.request.send( tmp )   
             
     def finish(self):
