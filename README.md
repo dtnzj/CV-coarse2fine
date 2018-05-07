@@ -11,7 +11,7 @@ This algorithm is achieved in the labview vision, but it takes a long time to co
 The temp3.py shows the compute time for full template matching, which cost 0.5s but this will cost more than 4s. 
 
 
-
+1
 <!-- Up to now, I could match the template and make pyramids for images.
 But there are several points that they are too closed to each other.
 I need to define a compare function to select the best ones. -->
