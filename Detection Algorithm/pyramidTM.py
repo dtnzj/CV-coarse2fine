@@ -7,25 +7,25 @@ import numpy as np
 import os
 from time import clock
 
-class PyramidTemplatMatching:
+class PyramidTemplatMatching(object):
     
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	
-	def __del__(self):
-		pass
+    
+    def __del__(self):
+        pass
 
-	# 
-	def MaxScoreMatch(self, img, tmpl):
+    # 
+    def MaxScoreMatch(self, img, tmpl):
+        
         # plt.figure(11)
         # plt.subplot(1, 2, 1)
         # plt.imshow(img)
         # plt.subplot(1, 2, 2)
         # plt.imshow(tmpl)
         # plt.show()
-
-        res = cv2.matchTemplate(img, tmpl, cv2.TM_CCOEFF_NORMED)
+        res = cv2.matchTemplate( img, tmpl, cv2.TM_CCOEFF_NORMED )
 
         pos = np.where(res>=res.max())
         pos = np.array(pos).T[0]
@@ -71,7 +71,7 @@ class PyramidTemplatMatching:
         loc = np.where( res >= thr)
         loc = np.array(loc).T
         
-        bb = RemoveDuplicates(loc,templ.shape[::-1], RD_th = templ.shape[0])
+        bb = self.RemoveDuplicates(loc,templ.shape[::-1], RD_th = templ.shape[0])
         
         return res, bb
 
@@ -111,7 +111,7 @@ class PyramidTemplatMatching:
         # plt.show()
 
         # coarse matching 
-        res, loc = FirstMatching(img_pyr[0], templ[0], thr)
+        res, loc = self.FirstMatching(img_pyr[0], templ[0], thr)
         loc = np.array(loc)
         # for pt in loc:
         #     cv2.rectangle(img_pyr[0], tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
@@ -142,7 +142,7 @@ class PyramidTemplatMatching:
                 # cv2.imshow('tst', tst)
                 # print(len(tst), len(templ[i]), i)
                 # cv2.waitKey(0)
-                abc = MaxScoreMatch(tst, templ[i])
+                abc = self.MaxScoreMatch(tst, templ[i])
                 # print('abc=', abc.append(abc))
                 
                 pos[0:2] = pos[0:2]+ abc
@@ -152,3 +152,43 @@ class PyramidTemplatMatching:
             
         return posOut
 
+
+
+if __name__ == '__main__':
+    # np.set_printoptions(threshold=100)
+    
+    ptm = PyramidTemplatMatching();
+    im = cv2.imread ('./test images/IMG00166.JPG', cv2.IMREAD_GRAYSCALE) 
+    # im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    templ = cv2.imread('./test images/template.jpg', cv2.IMREAD_GRAYSCALE)
+    # templ = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
+    
+    # templ = im_gray[1009:1510, 460:1052]
+    # cv2.namedWindow('TemplateImage',cv2.WINDOW_NORMAL)
+    # cv2.imshow('TemplateImage', im)
+    # plt.figure(1)
+    # plt.imshow(im)
+    # plt.show()
+    # plt.figure(2)
+    # plt.imshow(templ)
+    # plt.show()
+
+    # cv2.imwrite('template.jpg',templ)
+    # cv2.waitKey(0)
+    
+    # exit()
+
+    t_start = clock()
+    posOut = ptm.PyramidTemplatMatching(im, templ, pyrLevelMax=3, ratio=0.3)
+    t_end = clock()
+    dt = t_end - t_start
+    print('Compute Time:',dt, 1/dt)
+
+    for pt in posOut:
+        cv2.rectangle(im, tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
+        
+    cv2.namedWindow('OutPutImage', cv2.WINDOW_NORMAL)
+    cv2.imshow('OutPutImage', im)
+    
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
