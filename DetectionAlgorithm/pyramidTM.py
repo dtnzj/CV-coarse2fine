@@ -7,36 +7,38 @@ import numpy as np
 import os
 from time import clock
 
-# from DetectionAlgorithm import pyramidTM
-class PTM(object):
+# from DetectionAlgorithm.pyramidTM import pyramidTM
+class pyramidTM:
     # the camera object
     cap = None
-
+    cam_enable = 0
 
     #def __init__(self, cam_enable=0):
-    def __init__(self):
-        if cam_enable==0:
+    def __init__(self, cam_enable=0):
+        if cam_enable==1:
             self.cap = cv2.VideoCapture(0)
             
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
             print (self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             while(not self.cap.isOpened()):  
                 cv2.waitKey(50)
-            
+            self.cam_enable = 1
+        
         pass
 
     
     def __del__(self):
-        if cam_enable==0:
-            cap.release()
+        if self.cam_enable==0:
+            self.cap.release()
         
         cv2.destroyAllWindows()
         pass
 
+
     # camerea read 
     def cam_read(self):
         # Capture frame-by-frame
-        ret, frame = cap.read()
+        ret, frame = self.cap.read()
         # Our operations on the frame come here
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -184,7 +186,7 @@ class PTM(object):
 # if __name__ == '__main__':
 #     # np.set_printoptions(threshold=100)
     
-#     ptm = PyramidTemplatMatching();
+#     ptm = PTM();
 #     im = cv2.imread ('./test images/IMG00166.JPG', cv2.IMREAD_GRAYSCALE) 
 #     # im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 #     templ = cv2.imread('./test images/template.jpg', cv2.IMREAD_GRAYSCALE)
