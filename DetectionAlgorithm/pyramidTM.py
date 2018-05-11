@@ -7,15 +7,83 @@ import numpy as np
 import os
 from time import clock
 
-class PyramidTemplatMatching(object):
-    
-    def __init__(self):
+# from DetectionAlgorithm.pyramidTM import pyramidTM
+class pyramidTM:
+    # the camera object
+    cap        = None
+    cam_enable = 0
+    templ      = None
+    im         = None
+    gray       = None
+
+
+    #def __init__(self, cam_enable=0):
+    def __init__(self, cam_enable=0):
+        if cam_enable==1:
+            self.cap = cv2.VideoCapture(0)
+            
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
+            print (self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            while(not self.cap.isOpened()):  
+                cv2.waitKey(50)
+            self.cam_enable = 1
+
+        cv2.namedWindow('Cam',cv2.WINDOW_NORMAL)
         pass
 
     
     def __del__(self):
+        if self.cam_enable==1:
+            self.cap.release()
+        
+        cv2.destroyAllWindows()
         pass
 
+
+    # camerea read 
+    def cam_read(self):
+        # Capture frame-by-frame
+        ret, frame = self.cap.read()
+        # Our operations on the frame come here
+        self.gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        self.im = frame
+
+        return gray
+
+    # camerea display the origin images
+    def camDispOrigin(self):
+        cv2.imshow('Cam', self.im)
+    
+    # camerea display the matched images
+    def camDispMatched(self):
+        imLocal = self.im
+        for pt in self.posOut:
+            cv2.rectangle(imLocal, tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
+        
+        # cv2.namedWindow('Cam', cv2.WINDOW_NORMAL)
+        cv2.imshow('Cam', imLocal)
+        # cv2.imshow('Cam', [])
+        
+
+    # 
+    def getMatchResult(self):
+        if self.templ != None and self.gray != None:
+            self.posOut = ptm.PyramidTemplatMatching(   self.gray, 
+                                                        self.templ, 
+                                                        pyrLevelMax=3, 
+                                                        ratio=0.3)
+            return self.posOut
+        else:
+            return None
+
+        
+    def imageRead(self, path = './test images/IMG00166.JPG'):
+        self.im = cv2.imread (path, cv2.IMREAD_COLOR) 
+        self.gray = cv2.cvtColor(self.im, cv2.COLOR_BGR2GRAY)
+
+    def templateSet(self, path = './test images/template.jpg'):
+        self.templ = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        
     # 
     def MaxScoreMatch(self, img, tmpl):
         
@@ -153,42 +221,50 @@ class PyramidTemplatMatching(object):
         return posOut
 
 
-
 if __name__ == '__main__':
-    # np.set_printoptions(threshold=100)
-    
-    ptm = PyramidTemplatMatching();
-    im = cv2.imread ('./test images/IMG00166.JPG', cv2.IMREAD_GRAYSCALE) 
-    # im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    templ = cv2.imread('./test images/template.jpg', cv2.IMREAD_GRAYSCALE)
-    # templ = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
-    
-    # templ = im_gray[1009:1510, 460:1052]
-    # cv2.namedWindow('TemplateImage',cv2.WINDOW_NORMAL)
-    # cv2.imshow('TemplateImage', im)
-    # plt.figure(1)
-    # plt.imshow(im)
-    # plt.show()
-    # plt.figure(2)
-    # plt.imshow(templ)
-    # plt.show()
+    ptm = pyramidTM();
+    ptm.templateSet()
+    ptm.imageRead()
+    kk = ptm.getMatchResult()
+    print('posOut= ', kk)
+    ptm.camDispMatched()
+    while   cv2.waitKey(20)!='q':
+        pass
 
-    # cv2.imwrite('template.jpg',templ)
-    # cv2.waitKey(0)
+    pass
+# if __name__ == '__main__':
+#     # np.set_printoptions(threshold=100)
     
-    # exit()
+#     ptm = PTM();
+#     im = cv2.imread ('./test images/IMG00166.JPG', cv2.IMREAD_GRAYSCALE) 
+#     # im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+#     templ = cv2.imread('./test images/template.jpg', cv2.IMREAD_GRAYSCALE)
+#     # templ = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
+    
+#     # templ = im_gray[1009:1510, 460:1052]
+#     # cv2.namedWindow('TemplateImage',cv2.WINDOW_NORMAL)
+#     # cv2.imshow('TemplateImage', im)
+#     # plt.figure(1)
+#     # plt.imshow(im)
+#     # plt.show()
+#     # plt.figure(2)
+#     # plt.imshow(templ)
+#     # plt.show()
 
-    t_start = clock()
-    posOut = ptm.PyramidTemplatMatching(im, templ, pyrLevelMax=3, ratio=0.3)
-    t_end = clock()
-    dt = t_end - t_start
-    print('Compute Time:',dt, 1/dt)
+#     # cv2.imwrite('template.jpg',templ)
+#     # cv2.waitKey(0)
+    
+#     t_start = clock()
+#     posOut = ptm.PyramidTemplatMatching(im, templ, pyrLevelMax=3, ratio=0.3)
+#     t_end = clock()
+#     dt = t_end - t_start
+#     print('Compute Time:',dt, 1/dt)
 
-    for pt in posOut:
-        cv2.rectangle(im, tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
+#     for pt in posOut:
+#         cv2.rectangle(im, tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
         
-    cv2.namedWindow('OutPutImage', cv2.WINDOW_NORMAL)
-    cv2.imshow('OutPutImage', im)
+#     cv2.namedWindow('OutPutImage', cv2.WINDOW_NORMAL)
+#     cv2.imshow('OutPutImage', im)
     
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
