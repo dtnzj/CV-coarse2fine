@@ -19,7 +19,7 @@ try:
     sock.sendall(b"LocationRequest")
 
     received = sock.recv(1024)
-    t = struct.unpack("2d",received)
+    t = struct.unpack("4d",received)
     print(received,'\n',t)
 finally:
     sock.close()
