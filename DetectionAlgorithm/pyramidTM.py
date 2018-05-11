@@ -84,6 +84,43 @@ class pyramidTM:
     def templateSet(self, path = './test images/template.jpg'):
         self.templ = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         
+    def dispCam(self):
+        cv2.imshow('Cam',self.camread())
+
+    # 子进程要执行的代码
+    def camDispProc(self):
+        print('camDispProc() process start.')
+        
+        while cv2.waitKey(50) != 'w':
+            cv2.imshow('Cam',self.camread())
+            # time.sleep(0.05)
+            
+        print('camDispProc() process end.')
+        
+
+    def waittoend(self):
+        print('waittoend() process start.')
+        
+        while cv2.waitKey(50) != 'q':
+            pass
+        print('waittoend() process end.')
+            
+
+    def camfork(self):
+        # p = Pool(4)
+        # for i in range(5):
+        print('camDispProc() process will start.')
+        p1 = Process(target= self.camDispProc)
+        # print('waittoend() process will start.')
+        # p2 = Process(target= self.waittoend)
+        p1.start()
+        # p2.start()
+        p1.join()
+        # p2.join()
+        
+
+        print('Child process end.')
+    
     # 
     def MaxScoreMatch(self, img, tmpl):
         
