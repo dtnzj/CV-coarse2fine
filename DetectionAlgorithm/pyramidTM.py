@@ -28,7 +28,7 @@ class pyramidTM:
                 cv2.waitKey(50)
             self.cam_enable = 1
 
-        cv2.namedWindow('Cam',cv2.WINDOW_NORMAL)
+        # cv2.namedWindow('Cam',cv2.WINDOW_NORMAL)
         pass
 
     
@@ -68,7 +68,7 @@ class pyramidTM:
     # 
     def getMatchResult(self):
         if self.templ != None and self.gray != None:
-            self.posOut = ptm.PyramidTemplatMatching(   self.gray, 
+            self.posOut = self.PyramidTemplatMatching(  self.gray, 
                                                         self.templ, 
                                                         pyrLevelMax=3, 
                                                         ratio=0.3)
@@ -232,6 +232,8 @@ if __name__ == '__main__':
         pass
 
     pass
+
+
 # if __name__ == '__main__':
 #     # np.set_printoptions(threshold=100)
     
