@@ -9,6 +9,7 @@ Created on Tue Apr 11 14:22:19 2017
 from socketserver import BaseRequestHandler, TCPServer
 import struct
 # import the cam read and objectdetection class
+from DetectionAlgorithm.pyramidTM import pyramidTM
 
 class EchoHandler(BaseRequestHandler):
     
@@ -34,6 +35,7 @@ class EchoHandler(BaseRequestHandler):
     
 
 if __name__ == '__main__':
-    serv = TCPServer(("localhost", 9998), EchoHandler)
-    serv.serve_forever()
+    # serv = TCPServer(("localhost", 9998), EchoHandler)
+    # serv.serve_forever()
+    pass
 
