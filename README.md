@@ -11,7 +11,27 @@ This algorithm is achieved in the labview vision, but it takes a long time to co
 The temp3.py shows the compute time for full template matching, which cost 0.5s but this will cost more than 4s. 
 
 
-1
+
+
+# the framework for cam read & detection clss and its TCP server
+
+- tcp server side 
+- - initial tcp server
+- - handle define
+- - - call the cam read&od class 
+
+
+- cam read& od class
+- - initial cam 
+- - add a processor to display the imges and detection result 
+- - diplay the control commands 
+- - select running mode (continue/request)
+- - continue mode
+- - - add a processor to capture and detect
+- - request mode
+- - - request and detecte
+
+
 <!-- Up to now, I could match the template and make pyramids for images.
 But there are several points that they are too closed to each other.
 I need to define a compare function to select the best ones. -->
