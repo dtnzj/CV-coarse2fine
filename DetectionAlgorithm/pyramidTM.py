@@ -16,16 +16,16 @@ class pyramidTM:
     im         = None
     gray       = None
 
-
     #def __init__(self, cam_enable=0):
     def __init__(self, cam_enable=0):
         if cam_enable==1:
             self.cap = cv2.VideoCapture(0)
             
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
+            # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
             print (self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            while(not self.cap.isOpened()):  
-                cv2.waitKey(50)
+            print (self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            # while(not self.cap.isOpened()):  
+            #     cv2.waitKey(50)
             self.cam_enable = 1
 
         # cv2.namedWindow('Cam',cv2.WINDOW_NORMAL)
@@ -39,7 +39,18 @@ class pyramidTM:
         cv2.destroyAllWindows()
         pass
 
-
+    def camList(self):
+        count = 0
+        while count <= 10:
+            cap = cv2.VideoCapture( count )
+            cv2.waitKey(1000)
+            if cap.isOpened():
+                print('Cam %d is succesfull searched' % count)
+            else:
+                print('Cam %d is unsearched' % count)
+            count = count + 1
+        pass
+    
     # camerea read 
     def cam_read(self):
         # Capture frame-by-frame
@@ -48,11 +59,11 @@ class pyramidTM:
         self.gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         self.im = frame
 
-        return gray
+        # return gray
 
     # camerea display the origin images
     def camDispOrigin(self):
-        cv2.imshow('Cam', self.im)
+        cv2.imshow('Cam2', self.im)
     
     # camerea display the matched images
     def camDispMatched(self):
@@ -67,10 +78,11 @@ class pyramidTM:
 
     # 
     def getMatchResult(self):
-        if self.templ != None and self.gray != None:
+        
+        if not self.templ is None and not self.gray is None:
             self.posOut = self.PyramidTemplatMatching(  self.gray, 
                                                         self.templ, 
-                                                        pyrLevelMax=3, 
+                                                        pyrLevelMax=2, 
                                                         ratio=0.3)
             return self.posOut
         else:
@@ -81,7 +93,33 @@ class pyramidTM:
         self.im = cv2.imread (path, cv2.IMREAD_COLOR) 
         self.gray = cv2.cvtColor(self.im, cv2.COLOR_BGR2GRAY)
 
-    def templateSet(self, path = './test images/template.jpg'):
+    def templateSet(self):
+        plt.figure(0)
+        plt.imshow(self.gray)
+        plt.show()
+        print('The top-left point is: ')
+        tmpa = [int(x) for x in input().split()]
+        plt.figure(0)
+        plt.imshow(self.gray)
+        plt.show()
+        print('The bottom-right point is: ')
+        tmpb = [int(x) for x in input().split()]
+        tmpa = tmpa + tmpb
+        # tmpa = [338, 225, 436, 309]
+        print( tmpa )
+        k = self.gray[tmpa[1]:tmpa[3],tmpa[0]:tmpa[2]]
+
+        plt.figure(0)
+        plt.imshow(k)
+        plt.show()
+        tmp = input('is it right? Y/n') 
+        if tmp == b'n':
+            self.templateSet()
+        else:
+            cv2.imwrite('./test images/template.jpg',k)
+        pass
+    
+    def templateRead(self, path = './test images/template.jpg'):
         self.templ = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         
     # 
@@ -135,7 +173,7 @@ class pyramidTM:
     # matching the full image with the lowest resolution
     def FirstMatching(self, img_pyr, templ, thr = 0.8):
         res = cv2.matchTemplate(img_pyr, templ, cv2.TM_CCOEFF_NORMED)
-        
+        thr = np.max(res)
         loc = np.where( res >= thr)
         loc = np.array(loc).T
         
@@ -162,25 +200,26 @@ class pyramidTM:
             sh_t  = np.int16(np.array(  templ[0].shape[:2])[::-1]*ratio)
             
             img_pyr.insert(0, cv2.resize(img_pyr[0],tuple(sh_i)))
-            templ.insert(  0, cv2.resize(  templ[0],tuple(sh_t)))
+            templ.  insert(0, cv2.resize(  templ[0],tuple(sh_t)))
         
         # show the pyramid images 
-        # for i in range(0, pyrLevelMax):        
+        # for i in range(0, pyrLevelMax+1):        
         #     plt.figure(1)
         #     plt.subplot(2, 2, i+1)
         #     plt.imshow(img_pyr[i])  
-        #     tmp= ['img_pyr[', str(i), ']']   
+        #     tmp= 'img_pyr[%d]' % i
         #     plt.title(tmp) 
         #     plt.figure(2)
         #     plt.subplot(2, 2, i+1)
         #     plt.imshow(templ[i])
-        #     tmp= ['templ[', i, ']']
+        #     tmp= 'templ[%d]' % i
         #     plt.title(tmp) 
         # plt.show()
-
+        # input('2')
         # coarse matching 
         res, loc = self.FirstMatching(img_pyr[0], templ[0], thr)
         loc = np.array(loc)
+        # input('3')
         # for pt in loc:
         #     cv2.rectangle(img_pyr[0], tuple(pt[0:2][::-1]), tuple(pt[2:4][::-1]), (0, 0, 255), 1)
         
@@ -222,14 +261,25 @@ class pyramidTM:
 
 
 if __name__ == '__main__':
-    ptm = pyramidTM();
-    ptm.templateSet()
-    ptm.imageRead()
+    ptm = pyramidTM(cam_enable = 1)
+    # ptm.camList()
+
+    ptm.cam_read()
+    ptm.camDispOrigin()
+    cv2.waitKey(20)
+    # input('wait to next')
+    # ptm.templateSet()
+    ptm.templateRead()
+    cv2.imshow('Templ',ptm.templ)
+    cv2.waitKey(20)
+    # exit()
+    
     kk = ptm.getMatchResult()
     print('posOut= ', kk)
     ptm.camDispMatched()
-    while   cv2.waitKey(20)!='q':
-        pass
+    cv2.waitKey(20)
+    input('Waiting to End!')
+
 
     pass
 
