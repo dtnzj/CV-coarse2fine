@@ -15,8 +15,8 @@ from DetectionAlgorithm.pyramidTM import pyramidTM
 class EchoHandler(BaseRequestHandler):
     
     # set the objectDetection algorithm class 
-    ptm = pyramidTM(cam_enable = 0)
-    ptm.templateSet()
+    ptm = pyramidTM(cam_enable = 1)
+    ptm.templateRead()
     
 
     def handle(self):
@@ -25,8 +25,9 @@ class EchoHandler(BaseRequestHandler):
         x = (0, 0)
         if msg == b"LocationRequest":
             print ('calling LocationRequest() command')
-            self.ptm.imageRead()
+            self.ptm.cam_read()
             kk = self.ptm.getMatchResult()
+            # self.ptm.camDispMatched()
             print('Matched Location= ', kk)
             # self.ptm.camDispMatched()
 
